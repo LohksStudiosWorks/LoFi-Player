@@ -9,8 +9,6 @@ include (cmake/installLibCurl.cmake)
 include (cmake/installJson.cmake)
 include (cmake/installLSWE.cmake)
 
-find_package(lsw-engine REQUIRED)
-
 add_executable(example main.cpp) # put WIN32 to avoid terminal on Windows, if desired as such
 
 get_target_property(INCLUDES lswe::lsw-engine INTERFACE_INCLUDE_DIRECTORIES)
@@ -23,6 +21,6 @@ target_link_libraries(example
         libcurl
 )
 
-install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+#install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 # Use CMAKE_PREFIX_PATH to point find package to install folder on call!
