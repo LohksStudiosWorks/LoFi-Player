@@ -61,7 +61,25 @@ int main(int argc, char **argv) {
     buf = sanitize_js_to_json(buf);
 
     auto plist = nlohmann::ordered_json::parse(buf);
-    auto chosen = plist[0];
+
+    std::cout << "Choose a radio by number:" << std::endl;
+
+    std::vector<std::string> pnames;
+    for(const auto& plists : plist) {
+        const auto plist_name = plists["name"].get<std::string>();
+        std::cout << pnames.size() << ": " << plist_name << std::endl;
+        pnames.push_back(plist_name);
+    }
+
+    size_t p = pnames.size();
+    do {
+        std::cin >> p;
+        if (p > pnames.size()) {
+            std::cout << "Too big, try up to " << (pnames.size() - 1) << std::endl;
+        }
+    } while(p > pnames.size());
+
+    auto chosen = plist[p];
 
     std::cout << "Got links, thinking..." << std::endl;
 
@@ -75,10 +93,10 @@ int main(int argc, char **argv) {
         if (play.path_now != plays.first) {
             plays.first = play.path_now;
             if (plays.second) {
-                plays.second->instance.stop();
+                plays.second->instance.set_playing(false);
                 plays.second.reset();
             }
-            if (!download_from(sanitize_url(plays.first).c_str(), buf)) {
+            if (!download_from(sanitize_url(plays.first).c_str(), buf) || buf.size() == 0) {
                 std::cout << "\nFail loading from '" << plays.first << "'. Trying again..." << std::endl;
                 plays.first.clear();
             }
@@ -86,7 +104,7 @@ int main(int argc, char **argv) {
                 plays.second = std::make_unique<playing_instance>(buf.data(), buf.size());
                 mixer << plays.second->instance;
                 plays.second->instance.set_position(plays.second->sample.get_frequency() * play.time_curr);
-                plays.second->instance.play();
+                plays.second->instance.set_playing(true);
             }
         }
 
@@ -95,8 +113,6 @@ int main(int argc, char **argv) {
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    
-    return 0;
 }
 
 std::string sec_to_str(uint64_t orig) {
