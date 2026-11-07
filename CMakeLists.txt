@@ -12,7 +12,7 @@ include (cmake/installBatteryEmbed.cmake)
 
 file(GLOB_RECURSE PROJECT_SOURCES
      CONFIGURE_DEPENDS
-     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+     "src/*.cpp"
 )
 
 add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES}) # put WIN32 to avoid terminal on Windows, if desired as such
@@ -29,7 +29,7 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        include
 )
 
 b_embed(${PROJECT_NAME} "resources/calibri_fix.ttf")
