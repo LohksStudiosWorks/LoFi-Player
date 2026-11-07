@@ -1,4 +1,50 @@
 #include <LSWE/lswe.hpp>
+#include "display_handle.hpp"
+#include "track_handler.hpp"
+#include "audio_player.hpp"
+#include "event_table.hpp"
+
+#include <iostream>
+
+int main(int argc, char **argv) {
+    TrackHandler tracker;
+    AudioPlayer playback;
+    DisplayHandle disp;
+
+    auto queue = LSWE::Events::EventQueue::create();
+    queue << tracker.get_event_source();
+    queue << disp;
+
+    disp << tracker.get_event_source();
+
+    tracker.start();
+
+    for(bool running = true; running;) {
+        auto ev = queue.wait();
+
+        switch(ev.type) {
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            running = false;
+            break;
+        case +custom_event_table::TOGGLED_PLAYLIST:
+            tracker.toggle_playlist();
+            break;
+        case +custom_event_table::CHANGED_VOLUME_PERC:
+            playback.set_volume(static_cast<int>(ev.user.data1));
+            break;
+        case +custom_event_table::TRACK_DATA_UPDATED:
+            if (const auto* i = (TrackHandler::track_info*)ev.user.data2; i) {
+                playback.play(i->uri, i->time);
+                playback.prepare_next(i->uri_next);
+            }
+            break;
+        }
+    }
+}
+
+#ifdef DISABLE_FOR_NOW
+
+#include <LSWE/lswe.hpp>
 #include <iostream>
 
 #include <curl/curl.h>
@@ -10,8 +56,6 @@
 #include <regex>
 #include <memory>
 #include <format>
-
-using namespace LSWE;
 
 struct playing {
     double
@@ -231,3 +275,5 @@ bool download_from(const char* path, std::string& data) {
 
     return (res == CURLE_OK);
 }
+
+#endif

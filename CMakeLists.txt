@@ -8,8 +8,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include (cmake/installLibCurl.cmake)
 include (cmake/installJson.cmake)
 include (cmake/installLSWE.cmake)
+include (cmake/installBatteryEmbed.cmake)
 
-add_executable(${PROJECT_NAME} main.cpp) # put WIN32 to avoid terminal on Windows, if desired as such
+file(GLOB_RECURSE PROJECT_SOURCES
+     CONFIGURE_DEPENDS
+     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
+
+add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES}) # put WIN32 to avoid terminal on Windows, if desired as such
 
 get_target_property(INCLUDES lswe::lsw-engine INTERFACE_INCLUDE_DIRECTORIES)
 message(STATUS "Includes: ${INCLUDES}")
@@ -20,6 +26,14 @@ target_link_libraries(${PROJECT_NAME}
         nlohmann_json::nlohmann_json
         libcurl
 )
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+b_embed(${PROJECT_NAME} "resources/calibri_fix.ttf")
+b_embed(${PROJECT_NAME} "resources/template.png")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
