@@ -14,9 +14,7 @@ public:
     void set_volume(int vol);
 private:
     struct playing_data {
-        LSWE::Utility::File file;
-        LSWE::Audio::Sample sample;
-        LSWE::Audio::SampleInstance instance;
+        LSWE::Audio::Stream stream;
         playing_data(const char* buf, const size_t len);
     };
 
