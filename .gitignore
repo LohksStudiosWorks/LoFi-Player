@@ -1,4 +1,3 @@
 build/
 install/
-src/display_handle.cpp
 allegro.log
