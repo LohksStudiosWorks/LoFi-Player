@@ -32,13 +32,10 @@ void DisplayHandle::thr_update_display() {
     using namespace LSWE::Utility;
     using namespace LSWE::Events;
 
-    constexpr char font_name[] = "resources/calibri_fix.ttf";
-    constexpr char image_name[] = "resources/template.png";
-
-    const auto font_embedded = b::embed<font_name>();
+    const auto font_embedded = b::embed<"resources/calibri_fix.ttf">();
     auto font_fp = File::open_mem((void*)font_embedded.data(), font_embedded.length(), "rb");
 
-    const auto image_embedded = b::embed<image_name>();
+    const auto image_embedded = b::embed<"resources/template.png">();
     auto image_fp = File::open_mem((void*)image_embedded.data(), image_embedded.length(), "rb");
 
     Display::set_new_flags(ALLEGRO_FRAMELESS);

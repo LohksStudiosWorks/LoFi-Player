@@ -140,7 +140,7 @@ void TrackHandler::update_track_info() {
     const std::string raw_name_next = tracks[next_track_idx][0].get<std::string>();
 
     constexpr char expected_beg_str[] = "tracks/";
-    constexpr size_t expected_off = std::strlen(expected_beg_str);
+    constexpr size_t expected_off = sizeof(expected_beg_str) - 1;
 
     current.name = raw_name.substr(expected_off);
     size_t next_slash = current.name.find('/');
